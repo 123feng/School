@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iflytek.tms.mapper.CoursePlanDao">
+
+<insert id="addCoursePlan" parameterType="CoursePlan">
+    INSERT INTO `t_courseplan`
+            ( `stuid`,
+             `musictypeid`,
+             `starttime`,
+             `endtime`,
+             `teaid`)
+    VALUES (#{student.id},
+            #{musicType.id},
+            #{starttime},
+            #{endtime},
+            #{teacher.id});
+
+</insert>
+
+    <resultMap id="coursePlanResultMap" type="CoursePlan">
+        <id property="id" column="cpid"/>
+        <result property="starttime" column="starttime"/>
+        <result property="endtime" column="endtime"/>
+        <association property="student" javaType="Student">
+            <id property="id" column="sid"/>
+            <result property="name" column="sname" />
+        </association>
+
+        <association property="teacher" javaType="Teacher">
+            <id property="id" column="tid"/>
+            <result property="name" column="tname" />
+        </association>
+
+        <association property="musicType" javaType="MusicType">
+            <id property="id" column="mtid"/>
+            <result property="name" column="mtname" />
+        </association>
+    </resultMap>
+
+    <select id="getCoursePlanByType" resultMap="coursePlanResultMap" parameterType="map">
+                    SELECT
+              cp.`id` AS cpid,
+              cp.`starttime`,
+              cp.`endtime`,
+              s.`id` AS sid,
+              s.`name` AS sname,
+              mt.`id` AS mtid,
+              mt.`name` AS mtname,
+              t.`id` AS tid,
+              t.`name` AS tname
+
+            FROM `t_courseplan` cp
+            INNER JOIN  `t_student` s ON s.`id`=cp.`stuid`
+            INNER JOIN `t_musictype` mt ON mt.`id`=cp.`musictypeid`
+            INNER JOIN  `t_teacher` t ON t.`id`=cp.`teaid`
+            WHERE mt.`id`=#{mtid}  AND  YEAR(cp.`starttime`) =#{year}
+            AND  MONTH(cp.`starttime`)=#{month} AND DAY(cp.`starttime`) =#{day}
+           ORDER BY cp.`starttime` ASC
+    </select>
+
+    <delete id="deleteCoursePlan" parameterType="int">
+        DELETE
+        FROM `t_courseplan`
+        WHERE `id` = #{id};
+    </delete>
+
+
+
+
+
+</mapper>

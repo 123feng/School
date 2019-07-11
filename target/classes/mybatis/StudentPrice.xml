@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iflytek.tms.mapper.StudentPriceDao">
+    <resultMap id="studentPriceMap" type="StudentPrice">
+        <id property="id" column="spid"/>
+        <result property="level" column="level" />
+        <result property="price" column="price" />
+        <result property="totalprice" column="totalprice" />
+        <result property="time" column="time" />
+        <result property="totalclass" column="totalclass" />
+        <result property="leftclass" column="leftclass" />
+       <association property="student" javaType="Student">
+           <id property="id" column="sid"/>
+           <result property="name" column="sname" />
+       </association>
+
+        <association property="teacher" javaType="Teacher">
+            <id property="id" column="tid"/>
+            <result property="name" column="tname" />
+        </association>
+
+        <association property="musicType" javaType="MusicType">
+            <id property="id" column="mtid"/>
+            <result property="name" column="mtname" />
+        </association>
+
+    </resultMap>
+
+    <select id="getPageAll" resultMap="studentPriceMap" parameterType="map">
+
+        SELECT
+          sp.`id` AS spid,
+          sp.`level`,
+          sp.`price`,
+          sp.`totalprice`,
+          sp.`time`,
+          sp.`totalclass`,
+          sp.`leftclass`,
+          s.`id` AS sid,
+          s.`name` AS sname,
+          t.`id` AS tid,
+          t.`name` AS tname,
+          mt.`id` AS mtid,
+          mt.`name` AS mtname
+
+        FROM `t_studentprice` sp
+        INNER JOIN t_student s ON s.`id`=sp.`stuid`
+        INNER JOIN t_teacher t ON t.`id`=sp.`teaid`
+        INNER JOIN  t_musictype mt ON mt.`id`=sp.`musictypeid`
+        limit #{start},#{end}
+    </select>
+
+    <select id="getAllStudentPriceCount" resultType="int">
+        SELECT
+             COUNT(1)
+            FROM `t_studentprice` sp
+            INNER JOIN t_student s ON s.`id`=sp.`stuid`
+            INNER JOIN t_teacher t ON t.`id`=sp.`teaid`
+            INNER JOIN  t_musictype mt ON mt.`id`=sp.`musictypeid`
+    </select>
+
+    <select id="getStudentPriceByNameAndTypeCount" resultType="int" parameterType="map">
+
+        SELECT
+          COUNT(1)
+        FROM `t_studentprice` sp
+        INNER JOIN t_student s ON s.`id`=sp.`stuid`
+        INNER JOIN t_teacher t ON t.`id`=sp.`teaid`
+        INNER JOIN  t_musictype mt ON mt.`id`=sp.`musictypeid`
+        WHERE  s.`name` LIKE '%${sname}%' AND mt.`name` LIKE '%${mtname}%'
+
+    </select>
+
+
+    <select id="getStudentPriceByNameAndType" parameterType="map" resultMap="studentPriceMap">
+        SELECT
+          sp.`id` AS spid,
+          sp.`level`,
+          sp.`price`,
+          sp.`totalprice`,
+          sp.`time`,
+          sp.`totalclass`,
+          sp.`leftclass`,
+          s.`id` AS sid,
+          s.`name` AS sname,
+          t.`id` AS tid,
+          t.`name` AS tname,
+          mt.`id` AS mtid,
+          mt.`name` AS mtname
+
+        FROM `t_studentprice` sp
+        INNER JOIN t_student s ON s.`id`=sp.`stuid`
+        INNER JOIN t_teacher t ON t.`id`=sp.`teaid`
+        INNER JOIN  t_musictype mt ON mt.`id`=sp.`musictypeid`
+        WHERE  s.`name` LIKE '%${sname}%' AND mt.`name` LIKE '%${mtname}%'
+        limit #{start},#{end}
+    </select>
+
+    <insert id="addStudentPrice" parameterType="StudentPrice">
+
+        INSERT INTO `t_studentprice`
+            (`stuid`,
+             `teaid`,
+             `musictypeid`,
+             `level`,
+             `price`,
+             `totalprice`,
+             `time`,
+             `totalclass`)
+            VALUES (#{student.id},
+                    #{teacher.id},
+                    #{musicType.id},
+                    #{level},
+                    #{price},
+                    #{totalprice},
+                    #{time},
+                    #{totalclass});
+    </insert>
+
+    <update id="updateLeftclass" parameterType="StudentPrice">
+        UPDATE `t_studentprice`
+        SET
+          `leftclass` = #{leftclass}
+        WHERE `id` = #{id};
+    </update>
+
+
+    <resultMap id="studentPriceMap1" type="StudentPrice">
+        <id property="id" column="spid"/>
+        <result property="level" column="level" />
+        <result property="price" column="price" />
+        <result property="totalprice" column="totalprice" />
+        <result property="time" column="time" />
+        <result property="totalclass" column="totalclass" />
+        <result property="leftclass" column="leftclass" />
+        <association property="student" javaType="Student">
+            <id property="id" column="sid"/>
+            <result property="name" column="sname" />
+        </association>
+
+
+    </resultMap>
+
+    <select id="getStudentPriceById" parameterType="int" resultMap="studentPriceMap1">
+        SELECT
+          sp.`id` AS spid,
+          sp.`level`,
+          sp.`price`,
+          sp.`totalprice`,
+          sp.`time`,
+          sp.`totalclass`,
+          sp.`leftclass`,
+          s.`id` AS sid,
+          s.`name` AS sname
+        FROM `t_studentprice` sp
+        INNER JOIN  `t_student` s ON s.`id`=sp.`stuid`
+        WHERE  s.`id`=#{id}
+
+
+    </select>
+
+</mapper>

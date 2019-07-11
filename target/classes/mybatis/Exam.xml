@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iflytek.tms.mapper.ExamDao">
+    <resultMap id="ExamResultMap" type="Exam">
+        <id property="id" column="eid"/>
+        <result property="level" column="level"/>
+        <result property="price" column="price"/>
+        <result property="time" column="time"/>
+        <association property="student" javaType="Student">
+            <id property="id" column="sid"/>
+            <result property="name" column="sname" />
+        </association>
+        <association property="musicType" javaType="MusicType">
+            <id property="id" column="mtid"/>
+            <result property="name" column="mtname" />
+        </association>
+
+
+
+    </resultMap>
+    <select id="getExamByMtid" parameterType="int" resultMap="ExamResultMap">
+     SELECT
+              e.`id` AS eid,
+              e.`level`,
+              e.`price`,
+              e.`time`,
+              s.`id` AS sid,
+              s.`name` AS sname,
+              mt.`id` AS mtid,
+              mt.`name` AS mtname
+            FROM `t_exam` e
+            INNER JOIN  `t_student` s ON s.`id`=e.`stuid`
+            INNER JOIN   `t_musictype` mt ON mt.`id`=e.`musictypeid`
+            WHERE  mt.`id`=#{id}
+   </select>
+
+
+    <select id="getExamTotalCount" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM `t_exam`
+    </select>
+
+    <select id="getExamNameAndCount" resultType="StudentVo">
+         SELECT
+                  mt.`name`,
+                  COUNT(1) AS  musicTypeCount
+                FROM `t_exam` e
+                LEFT JOIN t_musictype mt ON mt.`id`=e.`musictypeid`
+                GROUP BY  e.`musictypeid`
+    </select>
+
+    <delete id="deleteExam" parameterType="int">
+        DELETE
+            FROM `t_exam`
+            WHERE `id` = #{id};
+
+    </delete>
+
+    <insert id="addExam" parameterType="Exam">
+        INSERT INTO `t_exam`
+            ( `stuid`,
+             `musictypeid`,
+             `level`,
+             `price`,
+             `time`)
+VALUES (#{student.id},
+        #{musicType.id},
+        #{level},
+        #{price},
+        #{time});
+    </insert>
+
+
+
+</mapper>

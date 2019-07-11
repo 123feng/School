@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iflytek.tms.mapper.UserDao">
+
+    <select id="getUserByNameAndPass" parameterType="User"  resultType="User">
+       SELECT
+          `id`,
+          `loginname`,
+          `password`,
+          `truename`,
+          `age`,
+          `auth`
+        FROM `t_user`
+        WHERE loginname=#{loginname} AND PASSWORD= #{password}
+
+    </select>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE `t_user`
+            SET
+              `loginname` = #{loginname},
+              `password` = #{password},
+              `truename` = #{truename},
+              `age` = #{age},
+              `auth` = #{auth}
+            WHERE `id` = #{id};
+    </update>
+    <select id="getUserById" parameterType="int" resultType="User">
+        SELECT
+          `id`,
+          `loginname`,
+          `password`,
+          `truename`,
+          `age`,
+          `auth`
+        FROM `t_user`
+        WHERE id=#{id}
+    </select>
+
+    <update id="updatePassword" parameterType="User">
+      UPDATE `t_user`
+          SET
+          `password` = #{password}
+           WHERE `id` = #{id};
+    </update>
+
+
+
+
+
+</mapper>

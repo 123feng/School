@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iflytek.tms.mapper.StudentDao">
+    <resultMap id="resultmap1" type="Student">
+        <id property="id" column="sid"/>
+        <result property="name" column="sname"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="telephone" column="telephone"/>
+        <result property="classlevel" column="classlevel"/>
+        <result property="grade" column="grade"/>
+        <result property="address" column="address"/>
+        <result property="isrent" column="isrent"/>
+        <result property="isbuy" column="isbuy"/>
+        <result property="wantbuy" column="wantbuy"/>
+        <result property="isfinish" column="isfinish"/>
+        <association property="musicType" javaType="MusicType" >
+            <id property="id" column="mtid"/>
+            <result property="name" column="mtname"/>
+            <result property="note" column="note"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getStudentTotalCount" resultType="int" >
+        SELECT
+            COUNT(1)
+            FROM `t_student`
+    </select>
+
+    <select id="getStudentByMusicTypeId" parameterType="int" resultMap="resultmap1">
+           SELECT
+              s.`id` as sid,
+              s.`name` as sname,
+              s.`age`,
+              s.`sex`,
+              s.`telephone`,
+              s.`classlevel`,
+              s.`grade`,
+              s.`address`,
+              s.`isrent`,
+              s.`isbuy`,
+              s.`wantbuy`,
+              s.`isfinish`,
+              mt.`id` as mtid,
+              mt.`name` as mtname,
+              mt.`note`
+            FROM `t_student` s
+            LEFT JOIN  t_musictype mt ON mt.`id`=s.`musictypeid`
+            WHERE  musictypeid=#{id} AND  s.`isfinish`=0
+
+    </select>
+
+    <select id="getMusicTypeNameAndCount"  resultType="StudentVo">
+                SELECT
+                  mt.`name`,
+                  COUNT(1) AS  musicTypeCount
+                FROM `t_student` s
+                LEFT JOIN t_musictype mt ON mt.`id`=s.`musictypeid`
+                GROUP BY  s.`musictypeid`
+
+
+    </select>
+
+    <update id="updateStudent" parameterType="Student">
+        UPDATE `t_student`
+            SET `name` = #{name},
+              `age` = #{age},
+              `sex` = #{sex},
+              `telephone` = #{telephone},
+              `classlevel` =#{classlevel},
+              `address` = #{address},
+               `grade`=#{grade},
+              `musictypeid` = #{musicType.id},
+              `isrent` = #{isrent},
+              `isbuy` = #{isbuy},
+              `wantbuy` = #{wantbuy},
+              `isfinish`=#{isfinish}
+             WHERE `id` = #{id};
+    </update>
+
+    <select id="getStudentById" parameterType="int" resultType="Student">
+        SELECT
+          `id`,
+          `name`,
+          `age`,
+          `sex`,
+          `telephone`,
+          `classlevel`,
+          `grade`,
+          `address`,
+          `musictypeid`,
+          `isrent`,
+          `isbuy`,
+          `wantbuy`,
+          `isfinish`
+        FROM `t_student`
+        WHERE id=#{id}
+    </select>
+
+    <insert id="addStudent" parameterType="Student">
+        INSERT INTO `t_student`
+            (`name`,
+             `age`,
+             `sex`,
+             `telephone`,
+             `grade`,
+             `address`,
+             `musictypeid`,
+             `isrent`,
+             `isbuy`,
+             `wantbuy`)
+VALUES (#{name},
+        #{age},
+        #{sex},
+        #{telephone},
+        #{grade},
+        #{address},
+        #{musicType.id},
+        #{isrent},
+        #{isbuy},
+        #{wantbuy});
+    </insert>
+
+    <select id="getAllStudent" resultType="Student">
+        SELECT
+          `id`,
+          `name`,
+          `age`,
+          `sex`,
+          `telephone`,
+          `classlevel`,
+          `grade`,
+          `address`,
+          `musictypeid`,
+          `isrent`,
+          `isbuy`,
+          `wantbuy`,
+          `isfinish`
+        FROM `t_student`
+    </select>
+
+
+
+
+
+</mapper>
